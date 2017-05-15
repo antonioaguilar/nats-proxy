@@ -18,7 +18,10 @@ NATS.io messaging proxy server
 usage: nats-proxy [options]
 
 options:
-  -c --config  Path to configuration file
+  -p --port    Port number (Default: 4000)
+  -H --host    Host IP (Default: 0.0.0.0)
+  -d --debug   Enable debug mode
+  -c --config  Configuration file
   -S --ssl     Enable HTTPS on proxy server
   -C --cert    Server certificate file
   -K --key     Private key for server certificate
@@ -32,10 +35,6 @@ To use ```nats-proxy```, you need to create a JSON configuraton file (e.g. ```co
 
 ```json
 {
-  "proxy": {
-    "host": "0.0.0.0",
-    "port": 4000
-  },
   "nats_servers": [
     "nats://0.0.0.0:4222"
   ],
@@ -52,7 +51,7 @@ To use ```nats-proxy```, you need to create a JSON configuraton file (e.g. ```co
 then, pass this configuration when running ```nats-proxy``` as follows:
 
 ```bash
-$ nats-proxy --config ./config.json
+$ nats-proxy --port 4000 --config ./config.json
 
 NATS.io messaging proxy server
 
@@ -68,10 +67,6 @@ You can configure custom messaging routes, for example:
   
 ```json
 {
-  "proxy": {
-    "host": "0.0.0.0",
-    "port": 4000
-  },
   "nats_servers": [
     "nats://0.0.0.0:4222"
   ],
