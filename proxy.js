@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var _ = require('lodash');
-var pkg = require('./package.json');
 var cmd = require('./commands');
 var fs = require('fs-extra');
 var NATS = require('nats');
@@ -20,6 +19,9 @@ var ssl_enabled = argv.S || argv.ssl;
 var nats_tls = argv.T || argv.tls;
 var cert_file = argv.C || argv.cert;
 var key_file = argv.K || argv.key;
+var default_port = argv.p || argv.port;
+var default_host = argv.H || argv.host;
+var debug = argv.d || argv.debug;
 var nats, cert, key, config;
 
 if(help || _.size(argv) === 1) {
@@ -42,11 +44,11 @@ if(config_file) {
   config = cmd.getConfig(config_file);
 }
 
-var proxy_host = config.proxy.host || '0.0.0.0';
-var proxy_port = config.proxy.port || 4000;
-var nats_servers = config.nats_servers || ['nats://0.0.0.0:4222'];
-var default_route = config.default_route || '/nats-proxy';
-var routes = config.routes || [];
+var proxy_port = default_port || 4000;
+var proxy_host = default_host || '0.0.0.0';
+var nats_servers = config_file ? config.nats_servers : ['nats://0.0.0.0:4222'];
+var default_route = config_file ? config.default_route : '/nats-proxy';
+var routes = config_file ? config.routes : [];
 
 if(!nats_tls) {
   nats = NATS.connect({ servers: nats_servers });
@@ -80,7 +82,10 @@ routes.forEach(function(item) {
 // if "channel_id" is passed on the JSON payload, then we use it as the channel name
 // otherwise we publish any received messages to the DEFAULT channel
 app.post(default_route, function(req, res) {
-  nats.publish(req.body.channel_id || 'DEFAULT', JSON.stringify(req.body));
+  var data = JSON.stringify(req.body);
+  var channel_id = req.body.channel_id || 'DEFAULT';
+  nats.publish(channel_id, data);
+  if(debug) console.log('[' + new Date().toISOString() + '] '  + channel_id + ':' + data);
   res.end();
 });
 
