@@ -13,63 +13,28 @@ $ npm install -g nats-proxy
 ```bash
 $ nats-proxy --help
 
-NATS.io messaging proxy server
+NATS.io messaging proxy v1.2.0
 
 usage: nats-proxy [options]
 
 options:
-  -p --port    Port number (Default: 4000)
-  -H --host    Host IP (Default: 0.0.0.0)
+  -p --port    Port number (Default: 5000)
+  -n --nats    NATS.io server URL (Default: nats://0.0.0.0:4222)
   -d --debug   Enable debug mode
   -c --config  Configuration file
-  -S --ssl     Enable HTTPS on proxy server
+  -t --tls     Enable HTTPS on proxy server
   -C --cert    Server certificate file
   -K --key     Private key for server certificate
   -h --help    Print this list and exit
   -v --version Print the current version
 ```
 
-## Configuration 
-
-To use ```nats-proxy```, you need to create a JSON configuraton file (e.g. ```config.json```):
-
-```json
-{
-  "nats_servers": [
-    "nats://0.0.0.0:4222"
-  ],
-  "default_route": "/nats-proxy",
-  "routes": [
-    {
-      "url": "/ping",
-      "channel": "HEARTBEAT"
-    }
-  ]
-}
-```
-
-then, pass this configuration when running ```nats-proxy``` as follows:
-
-```bash
-$ nats-proxy --port 4000 --config ./config.json
-
-NATS.io messaging proxy server
-
--  Proxy server running on http://0.0.0.0:4000
--  NATS server running on nats://0.0.0.0:4222
-```
-
-this command will start ```nats-proxy``` on [http://localhost:4000](http://localhost:4000) and connect to a [NATS server](https://nats.io/) instance on [nats://localhost:4222](nats://localhost:4222) 
-
-## Routes
+## Configuration
  
-You can configure custom messaging routes, for example: 
+You can configure custom messaging routes via a JSON file (e.g. ```routes.json```), for example: 
   
 ```json
 {
-  "nats_servers": [
-    "nats://0.0.0.0:4222"
-  ],
   "default_route": "/nats-proxy",
   "routes": [
     {
@@ -88,6 +53,20 @@ You can configure custom messaging routes, for example:
 }
 
 ```
+
+then, pass this configuration when running ```nats-proxy``` as follows:
+
+```bash
+$ nats-proxy --port 4000 --config routes.json
+
+NATS.io messaging proxy server
+
+-  Proxy server running on http://0.0.0.0:4000
+-  NATS server running on nats://0.0.0.0:4222
+```
+
+this command will start ```nats-proxy``` on [http://localhost:4000](http://localhost:4000) and connect to a [NATS server](https://nats.io/) instance on [nats://localhost:4222](nats://localhost:4222) 
+
 
 Each route is mapped to a [NATS channel](http://nats.io/documentation/internals/nats-protocol/) (e.g. topic name). We can make HTTP POST requests to those routes and publish messages directly to [NATS server](https://nats.io/) channels, for example:
 
