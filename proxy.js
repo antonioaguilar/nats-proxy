@@ -3,6 +3,7 @@
 var pkg = require('./package.json');
 var cmd = require('./commands');
 var _ = require('lodash');
+var ip = require('ip');
 var fs = require('fs-extra');
 var NATS = require('nats');
 var http = require('http');
@@ -13,6 +14,7 @@ var argv = require('minimist')(process.argv.slice(2));
 var bodyParser = require('body-parser');
 var app = express();
 
+var proxy_host = ip.address();
 var help = argv.h || argv.help;
 var version = argv.v || argv.version;
 var config_file = argv.c || argv.config;
@@ -20,8 +22,8 @@ var tls_enabled = argv.t || argv.tls;
 var cert_file = argv.C || argv.cert;
 var key_file = argv.K || argv.key;
 var default_port = argv.p || argv.port;
-var default_nats = argv.n || argv.nats;
 var debug = argv.d || argv.debug;
+var default_nats = argv.n || argv.nats;
 var nats, cert, key, config;
 
 if(help || _.size(argv) === 1) {
@@ -44,9 +46,8 @@ if(config_file) {
   config = cmd.getConfig(config_file);
 }
 
-var proxy_port = default_port || 5000;
-var proxy_host = '0.0.0.0';
-var nats_host = default_nats || 'nats://0.0.0.0:4222';
+var proxy_port = parseInt(default_port) || 5000;
+var nats_host = default_nats || 'nats://' + proxy_host + ':4222';
 var default_route = config_file ? config.default_route : '/nats-proxy';
 var routes = config_file ? config.routes : [];
 
@@ -81,8 +82,8 @@ if(tls_enabled && cert && key) {
     console.log([
       '', 'NATS.io messaging proxy v' + pkg.version,
       '',
-      '-  Proxy server running on https://' + proxy_host + ':' + proxy_port,
-      '-  NATS server running on ' + nats.currentServer.url.host,
+      '-  Proxy running on https://' + proxy_host + ':' + proxy_port,
+      '-  NATS running on nats://' + nats.currentServer.url.host,
       ''
     ].join('\n'));
   });
@@ -92,8 +93,8 @@ else {
     console.log([
       '', 'NATS.io messaging proxy v' + pkg.version,
       '',
-      '-  Proxy server running on http://' + proxy_host + ':' + proxy_port,
-      '-  NATS server running on nats://' + nats.currentServer.url.host,
+      '-  Proxy running on http://' + proxy_host + ':' + proxy_port,
+      '-  NATS running on nats://' + nats.currentServer.url.host,
       ''
     ].join('\n'));
   });
