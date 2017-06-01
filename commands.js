@@ -3,18 +3,17 @@ var fs = require('fs-extra');
 
 function getHelp() {
   console.log([
-    '', 'NATS.io messaging proxy server',
+    '', 'NATS.io messaging proxy v' + pkg.version,
     '', 'usage: nats-proxy [options]',
     '',
     'options:',
-    '  -p --port    Port number (Default: 4000)',
-    '  -H --host    Host IP (Default: 0.0.0.0)',
+    '  -p --port    Port number (Default: 5000)',
+    '  -n --nats    NATS.io server URL (Default: nats://0.0.0.0:4222)',
     '  -d --debug   Enable debug mode',
     '  -c --config  Configuration file',
-    '  -S --ssl     Enable HTTPS on proxy server',
+    '  -t --tls     Enable HTTPS on proxy server',
     '  -C --cert    Server certificate file',
     '  -K --key     Private key for server certificate',
-    //'  -T --tls     Enable TLS on NATS server', // disable TLS on NATS because it requires a CA certificate
     '  -h --help    Print this list and exit',
     '  -v --version Print the current version',
     ''
