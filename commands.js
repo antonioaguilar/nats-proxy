@@ -1,5 +1,6 @@
 var pkg = require('./package.json');
 var fs = require('fs-extra');
+var ip = require('ip');
 
 function getHelp() {
   console.log([
@@ -8,12 +9,12 @@ function getHelp() {
     '',
     'options:',
     '  -p --port    Port number (Default: 5000)',
-    '  -n --nats    NATS.io server URL (Default: nats://0.0.0.0:4222)',
+    '  -n --nats    NATS.io server URL (Default: nats://' + ip.address() + ':4222)',
     '  -d --debug   Enable debug mode',
-    '  -c --config  Configuration file',
-    '  -t --tls     Enable HTTPS on proxy server',
+    '  -c --config  Routes configuration file',
+    '  -t --tls     Enable TLS / HTTPS',
     '  -C --cert    Server certificate file',
-    '  -K --key     Private key for server certificate',
+    '  -K --key     Private key file',
     '  -h --help    Print this list and exit',
     '  -v --version Print the current version',
     ''
@@ -32,7 +33,8 @@ function getConfig(config_file) {
     return fs.readJSONSync(config_file);
   }
   catch(err) {
-    console.error('Error in configuration file');
+    console.error('Error: Could not find file');
+    console.error(err);
     process.exit();
   }
 }
@@ -43,7 +45,7 @@ function getCertificate(cert_file) {
     return fs.readFileSync(cert_file);
   }
   catch(err) {
-    console.error('Error in certificate file');
+    console.error('Error: Could not find certificate file');
     process.exit();
   }
 }
@@ -54,7 +56,7 @@ function getKey(cert_key) {
     return fs.readFileSync(cert_key);
   }
   catch(err) {
-    console.error('Error in key file');
+    console.error('Error: Could not find key file');
     process.exit();
   }
 }
