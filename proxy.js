@@ -70,7 +70,8 @@ routes.forEach(function(item) {
 
 app.post(default_route, function(req, res) {
   var data = JSON.stringify(req.body);
-  var channel_id = req.body.channel_id || 'DEFAULT';
+  var channel_id = data.channel_id || 'DEFAULT';
+  delete data.channel_id;
   nats.publish(channel_id, data);
   if(debug) console.log('[' + new Date().toISOString() + '] ' + channel_id + ':' + data);
   res.end();
