@@ -1,14 +1,15 @@
 {
   "name": "nats-proxy",
-  "version": "1.3.0",
-  "description": "NATS proxy",
-  "main": "proxy.js",
+  "version": "1.4.0",
+  "description": "NATS.io messaging proxy",
+  "main": "index.js",
   "preferGlobal": true,
   "bin": {
-    "nats-proxy": "proxy.js"
+    "nats-proxy": "index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "docker build . -t aaguilar/nats-proxy",
+    "container": "docker run -it --rm -m 128M -p 5000:5000 aaguilar/nats-proxy -p 5000 -n $(hostname)"
   },
   "repository": {
     "type": "git",
@@ -26,13 +27,13 @@
   },
   "homepage": "https://github.com/antonioaguilar/nats-proxy#readme",
   "dependencies": {
-    "body-parser": "^1.17.1",
-    "express": "^4.15.2",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
     "express-status-monitor": "^0.1.9",
-    "fs-extra": "^2.1.2",
+    "fs-extra": "^4.0.0",
     "ip": "^1.1.5",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
-    "nats": "^0.7.16"
+    "nats": "^0.7.20"
   }
 }

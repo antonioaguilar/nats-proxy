@@ -13,13 +13,13 @@ $ npm install -g nats-proxy
 ```bash
 $ nats-proxy --help
 
-NATS.io messaging proxy v1.2.8
+NATS.io messaging proxy v1.4.0
 
 usage: nats-proxy [options]
 
 options:
   -p --port    Port number (Default: 5000)
-  -n --nats    NATS.io server URL (Default: nats://192.168.1.33:4222)
+  -n --nats    NATS.io server URL (Default: nats://192.168.1.35:4222)
   -d --debug   Enable debug mode
   -c --config  Routes configuration file
   -t --tls     Enable TLS / HTTPS
