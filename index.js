@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var pkg = require('./package.json');
-var cmd = require('./commands');
+var cmd = require('./utils');
 var _ = require('lodash');
 var ip = require('ip');
 var fs = require('fs-extra');
@@ -47,16 +47,17 @@ if(config_file) {
 }
 
 var proxy_port = parseInt(default_port) || 5000;
-var nats_host = default_nats || 'nats://' + proxy_host + ':4222';
+var nats_host = default_nats || ip.address();
 var default_route = config_file ? config.default_route : '/nats-proxy';
 var routes = config_file ? config.routes : [];
 
-nats = NATS.connect({ servers: [nats_host] });
+nats = NATS.connect({ servers: ['nats://' + nats_host + ':4222'] });
 
 app.use(monitor());
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
