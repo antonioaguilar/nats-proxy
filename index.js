@@ -70,11 +70,11 @@ routes.forEach(function(item) {
 });
 
 app.post(default_route, function(req, res) {
+  var channel = req.body.channel || 'DEFAULT';
+  delete req.body.channel;
   var data = JSON.stringify(req.body);
-  var channel_id = data.channel_id || 'DEFAULT';
-  delete data.channel_id;
-  nats.publish(channel_id, data);
-  if(debug) console.log('[' + new Date().toISOString() + '] ' + channel_id + ':' + data);
+  nats.publish(channel, data);
+  if(debug) console.log(new Date().toISOString(), data);
   res.end();
 });
 
@@ -83,9 +83,8 @@ if(tls_enabled && cert && key) {
   https.createServer(httpsOptions, app).listen(proxy_port, proxy_host, function() {
     console.log([
       '', 'NATS.io messaging proxy v' + pkg.version,
-      '',
-      '-  Proxy running on https://' + proxy_host + ':' + proxy_port,
-      '-  NATS running on nats://' + nats.currentServer.url.host,
+      'Service running on https://' + proxy_host + ':' + proxy_port,
+      'NATS.io running on nats://' + nats.currentServer.url.host,
       ''
     ].join('\n'));
   });
@@ -94,9 +93,8 @@ else {
   http.createServer(app).listen(proxy_port, proxy_host, function() {
     console.log([
       '', 'NATS.io messaging proxy v' + pkg.version,
-      '',
-      '-  Proxy running on http://' + proxy_host + ':' + proxy_port,
-      '-  NATS running on nats://' + nats.currentServer.url.host,
+      'Service running on http://' + proxy_host + ':' + proxy_port,
+      'NATS.io running on nats://' + nats.currentServer.url.host,
       ''
     ].join('\n'));
   });

@@ -13,7 +13,7 @@ $ npm install -g nats-proxy
 ```bash
 $ nats-proxy --help
 
-NATS.io messaging proxy v1.4.0
+NATS.io messaging proxy v1.5.0
 
 usage: nats-proxy [options]
 
@@ -73,7 +73,7 @@ $ curl -s -H "Content-Type: application/json" -X POST -d '{"account_id":"ACC-123
 
 in this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
 
-There is also a ```default_route``` that can be used to publish messages to a specific ```channel_id```, for example:
+There is also a ```default_route``` that can be used to publish messages to a specific ```channel```, for example:
  
 ```bash
 $ curl -s -H "Content-Type: application/json" -X POST -d '{"channel_id":"RANDOM_CHANNEL","account":"ACC-123456789","orders":"PO-123456789"}' http://localhost:5000/nats-proxy
