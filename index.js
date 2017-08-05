@@ -26,29 +26,29 @@ var debug = argv.d || argv.debug;
 var default_nats = argv.n || argv.nats;
 var nats, cert, key, config;
 
-if(help || _.size(argv) === 1) {
+if (help || _.size(argv) === 1) {
   cmd.getHelp();
 }
 
-if(version) {
+if (version) {
   cmd.getVersion();
 }
 
-if(cert_file) {
+if (cert_file) {
   cert = cmd.getCertificate(cert_file);
 }
 
-if(key_file) {
+if (key_file) {
   key = cmd.getKey(key_file);
 }
 
-if(config_file) {
+if (config_file) {
   config = cmd.getConfig(config_file);
 }
 
 var proxy_port = parseInt(default_port) || 5000;
 var nats_host = default_nats || ip.address();
-var default_route = config_file ? config.default_route : '/nats-proxy';
+var default_route = config_file ? config.default_route : '/';
 var routes = config_file ? config.routes : [];
 
 nats = NATS.connect({ servers: ['nats://' + nats_host + ':4222'] });
@@ -74,11 +74,11 @@ app.post(default_route, function(req, res) {
   delete req.body.channel;
   var data = JSON.stringify(req.body);
   nats.publish(channel, data);
-  if(debug) console.log(new Date().toISOString(), data);
+  if (debug) console.log(new Date().toISOString(), data);
   res.end();
 });
 
-if(tls_enabled && cert && key) {
+if (tls_enabled && cert && key) {
   var httpsOptions = { key: key, cert: cert };
   https.createServer(httpsOptions, app).listen(proxy_port, proxy_host, function() {
     console.log([
