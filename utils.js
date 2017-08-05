@@ -32,7 +32,7 @@ function getConfig(config_file) {
     fs.statSync(config_file).isFile();
     return fs.readJSONSync(config_file);
   }
-  catch(err) {
+  catch (err) {
     console.error('Error: Could not find file');
     console.error(err);
     process.exit();
@@ -44,7 +44,7 @@ function getCertificate(cert_file) {
     fs.statSync(cert_file).isFile();
     return fs.readFileSync(cert_file);
   }
-  catch(err) {
+  catch (err) {
     console.error('Error: Could not find certificate file');
     process.exit();
   }
@@ -55,7 +55,7 @@ function getKey(cert_key) {
     fs.statSync(cert_key).isFile();
     return fs.readFileSync(cert_key);
   }
-  catch(err) {
+  catch (err) {
     console.error('Error: Could not find key file');
     process.exit();
   }

@@ -13,7 +13,7 @@ $ npm install -g nats-proxy
 ```bash
 $ nats-proxy --help
 
-NATS.io messaging proxy v1.5.0
+NATS.io messaging proxy v1.6.0
 
 usage: nats-proxy [options]
 
@@ -59,7 +59,7 @@ then, pass this configuration when running ```nats-proxy``` as follows:
 ```bash
 $ nats-proxy --port 5000 --config routes.json
 
-NATS.io messaging proxy v1.2.8
+NATS.io messaging proxy v1.6.0
 
 -  Proxy running on http://192.168.1.33:5000
 -  NATS running on nats://192.168.1.33:4222
@@ -76,7 +76,7 @@ in this example, JSON data is pushed to the ```/accounts``` route and published 
 There is also a ```default_route``` that can be used to publish messages to a specific ```channel```, for example:
  
 ```bash
-$ curl -s -H "Content-Type: application/json" -X POST -d '{"channel_id":"RANDOM_CHANNEL","account":"ACC-123456789","orders":"PO-123456789"}' http://localhost:5000/nats-proxy
+$ curl -s -H "Content-Type: application/json" -X POST -d '{"channel_id":"RANDOM_CHANNEL","account":"ACC-123456789","orders":"PO-123456789"}' http://localhost:5000/
 ```
 
 this command will post the JSON data to the default route (e.g. [http://localhost:4000/nats-proxy](http://localhost:4000/nats-proxy)) and will publish this data to the [NATS server](https://nats.io/) on a channel called ```RANDOM_CHANNEL```.
