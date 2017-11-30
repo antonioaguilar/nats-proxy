@@ -73,7 +73,7 @@ curl -s -H "Content-Type: application/json" \
 http://localhost:5000/accounts
 ```
 
-in this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
+Nn this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
 
 There is also a ```default_route``` that can be used to publish messages to a specific ```channel```, for example:
  
@@ -83,8 +83,9 @@ curl -s -H "Content-Type: application/json" \
 http://localhost:5000/
 ```
 
-this command will post the JSON data to the default route (e.g. [http://localhost:5000/nats-proxy](http://localhost:5000/nats-proxy)) and will publish this data to the [NATS server](https://nats.io/) on a channel called ```RANDOM_CHANNEL_ID```.
-This allows clients to specify a NATS channel ID to publish messages when hitting the default route. 
+This command will post the JSON data to the ```default route``` configured in the ```routes.json``` file (e.g. [http://localhost:5000/](http://localhost:5000/)) and will publish this data to the [NATS server](https://nats.io/) on a channel called ```RANDOM_CHANNEL_ID```.
+
+This allows clients to arbitrarily specify a NATS channel ID to publish messages when hitting the default route. 
 
 ## Monitoring
 
