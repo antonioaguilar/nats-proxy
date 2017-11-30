@@ -19,7 +19,7 @@ usage: nats-proxy [options]
 
 options:
   -p --port    Port number (Default: 5000)
-  -n --nats    NATS.io server URL (Default: nats://192.168.1.35:4222)
+  -n --nats    NATS.io server URL
   -d --debug   Enable debug mode
   -c --config  Routes configuration file
   -t --tls     Enable TLS / HTTPS
@@ -35,7 +35,7 @@ You can configure custom messaging routes via a JSON file (e.g. ```routes.json``
   
 ```json
 {
-  "default_route": "/nats-proxy",
+  "default_route": "/",
   "routes": [
     {
       "url": "/accounts",
@@ -68,7 +68,9 @@ NATS.io messaging proxy v1.6.0
 Each route is mapped to a [NATS channel](http://nats.io/documentation/internals/nats-protocol/) (e.g. topic name). We can make HTTP POST requests to those routes and publish messages directly to [NATS server](https://nats.io/) channels, for example:
 
 ```bash
-$ curl -s -H "Content-Type: application/json" -X POST -d '{"account_id":"ACC-123456789","order_id":"PO-123456789"}' http://localhost:5000/accounts
+curl -s -H "Content-Type: application/json" \
+-X POST -d '{"account_id":"ACC-123456789","order_id":"PO-123456789"}' \
+http://localhost:5000/accounts
 ```
 
 in this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
@@ -76,10 +78,12 @@ in this example, JSON data is pushed to the ```/accounts``` route and published 
 There is also a ```default_route``` that can be used to publish messages to a specific ```channel```, for example:
  
 ```bash
-$ curl -s -H "Content-Type: application/json" -X POST -d '{"channel_id":"RANDOM_CHANNEL","account":"ACC-123456789","orders":"PO-123456789"}' http://localhost:5000/
+curl -s -H "Content-Type: application/json" \
+-X POST -d '{"channel":"RANDOM_CHANNEL_ID","account":"ACC-123456789","orders":"PO-123456789"}' \
+http://localhost:5000/
 ```
 
-this command will post the JSON data to the default route (e.g. [http://localhost:4000/nats-proxy](http://localhost:4000/nats-proxy)) and will publish this data to the [NATS server](https://nats.io/) on a channel called ```RANDOM_CHANNEL```.
+this command will post the JSON data to the default route (e.g. [http://localhost:5000/nats-proxy](http://localhost:5000/nats-proxy)) and will publish this data to the [NATS server](https://nats.io/) on a channel called ```RANDOM_CHANNEL_ID```.
 This allows clients to specify a NATS channel ID to publish messages when hitting the default route. 
 
 ## Monitoring
@@ -95,5 +99,8 @@ docker pull aaguilar/nats-proxy
 ```
 
 ```bash
-docker run -it --rm -p 5000:5000 -v $(pwd)/:/root aaguilar/nats-proxy -p 5000 -n nats://192.168.1.33:4222 -c /root/routes.json
+docker run -it --rm \
+-p 5000:5000 \
+-v $(pwd)/:/root \
+aaguilar/nats-proxy -p 5000 -n nats://192.168.1.33:4222 -c /root/routes.json
 ```
