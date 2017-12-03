@@ -73,7 +73,7 @@ curl -s -H "Content-Type: application/json" \
 http://localhost:5000/accounts
 ```
 
-Nn this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
+In this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
 
 There is also a ```default_route``` that can be used to publish messages to a specific ```channel```, for example:
  
