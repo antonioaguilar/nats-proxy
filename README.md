@@ -2,7 +2,7 @@
 
 A simple NATS.io messaging proxy
 
-## Install 
+## Install
 
 ```bash
 $ npm install -g nats-proxy
@@ -13,15 +13,14 @@ $ npm install -g nats-proxy
 ```bash
 $ nats-proxy --help
 
-NATS.io messaging proxy v1.6.0
+NATS.io messaging proxy
 
 usage: nats-proxy [options]
 
 options:
-  -p --port    Port number (Default: 5000)
-  -n --nats    NATS.io server URL
-  -d --debug   Enable debug mode
-  -c --config  Routes configuration file
+  -p --port    Port number (Default: 8080)
+  -n --nats    NATS server URL (Default: nats://0.0.0.0:4222)
+  -d --debug   Enable debug output
   -t --tls     Enable TLS / HTTPS
   -C --cert    Server certificate file
   -K --key     Private key file
@@ -29,67 +28,23 @@ options:
   -v --version Print the current version
 ```
 
-## Configuration
- 
-You can configure custom messaging routes via a JSON file (e.g. ```routes.json```), for example: 
-  
-```json
-{
-  "default_route": "/",
-  "routes": [
-    {
-      "url": "/accounts",
-      "channel": "ACCOUNTS"
-    },
-    {
-      "url": "/orders",
-      "channel": "ORDERS"
-    },
-    {
-      "url": "/products",
-      "channel": "PRODUCTS"
-    }
-  ]
-}
+## Publishing data to NATS
 
-```
-
-then, pass this configuration when running ```nats-proxy``` as follows:
-
-```bash
-$ nats-proxy --port 5000 --config routes.json
-
-NATS.io messaging proxy v1.6.0
-
--  Proxy running on http://192.168.1.33:5000
--  NATS running on nats://192.168.1.33:4222
-```
-
-Each route is mapped to a [NATS channel](http://nats.io/documentation/internals/nats-protocol/) (e.g. topic name). We can make HTTP POST requests to those routes and publish messages directly to [NATS server](https://nats.io/) channels, for example:
+External clients can issue HTTP post requests to the default route `/` and publish messages directly to [NATS.io](https://nats.io/), for example:
 
 ```bash
 curl -s -H "Content-Type: application/json" \
--X POST -d '{"account_id":"ACC-123456789","order_id":"PO-123456789"}' \
-http://localhost:5000/accounts
+-X POST -d '{"__subject":"CUSTOMER","account":"ACC-123456789","orders":"PO-123456789"}' \
+http://localhost:8080/
 ```
 
-In this example, JSON data is pushed to the ```/accounts``` route and published on the ```ACCOUNTS``` channel.  
+This command will post the JSON data to the default route [http://localhost:8080/](http://localhost:8080/), the `nats-proxy` server will read and parse the JSON data and will publish this data to [NATS.io](https://nats.io/) with a subject called `CUSTOMER`.
 
-There is also a ```default_route``` that can be used to publish messages to a specific ```channel```, for example:
- 
-```bash
-curl -s -H "Content-Type: application/json" \
--X POST -d '{"channel":"RANDOM_CHANNEL_ID","account":"ACC-123456789","orders":"PO-123456789"}' \
-http://localhost:5000/
-```
-
-This command will post the JSON data to the ```default route``` configured in the ```routes.json``` file (e.g. [http://localhost:5000/](http://localhost:5000/)) and will publish this data to the [NATS server](https://nats.io/) on a channel called ```RANDOM_CHANNEL_ID```.
-
-This allows clients to arbitrarily specify a NATS channel ID to publish messages when hitting the default route. 
+This feature allows clients to arbitrarily specify a NATS subject and publish messages directly to NATS without using the default [NATS client libraries](https://nats.io/download/).
 
 ## Monitoring
 
-You can monitor ```nats-proxy``` and view live stats by accessing the ```/status``` route, e.g. open this URL in your browser [http://localhost:5000/status](http://localhost:5000/status)
+You can monitor ```nats-proxy``` and view live stats by accessing the [http://localhost:8080/](http://localhost:8080/).
 
 ## Run in Docker container
 
@@ -100,8 +55,5 @@ docker pull aaguilar/nats-proxy
 ```
 
 ```bash
-docker run -it --rm \
--p 5000:5000 \
--v $(pwd)/:/root \
-aaguilar/nats-proxy -p 5000 -n nats://192.168.1.33:4222 -c /root/routes.json
+docker run -it --rm -p 8080:8080 aaguilar/nats-proxy -p 8080 -n nats://localhost:4222
 ```
