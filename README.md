@@ -1,6 +1,6 @@
 # nats-proxy
 
-A simple NATS.io messaging proxy
+This proxy server allows clients to arbitrarily specify a NATS.io subject and publish messages directly to NATS.io without using the default [NATS.io client libraries](https://nats.io/download/).
 
 ## Install
 
@@ -40,8 +40,6 @@ http://localhost:8080/
 
 This command will post the JSON data to the default route [http://localhost:8080/](http://localhost:8080/), the `nats-proxy` server will read and parse the JSON data and will publish this data to [NATS.io](https://nats.io/) with a subject called `CUSTOMER`.
 
-This feature allows clients to arbitrarily specify a NATS subject and publish messages directly to NATS without using the default [NATS client libraries](https://nats.io/download/).
-
 ## Monitoring
 
 You can monitor ```nats-proxy``` and view live stats by accessing the [http://localhost:8080/](http://localhost:8080/).
@@ -51,9 +49,9 @@ You can monitor ```nats-proxy``` and view live stats by accessing the [http://lo
 You can run ```nats-proxy``` in a Docker container as follows:
 
 ```bash
+# pull the image
 docker pull aaguilar/nats-proxy
-```
 
-```bash
+# run the container
 docker run -it --rm -p 8080:8080 aaguilar/nats-proxy -p 8080 -n nats://localhost:4222
 ```
