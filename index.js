@@ -14,88 +14,55 @@ var argv = require('minimist')(process.argv.slice(2));
 var bodyParser = require('body-parser');
 var app = express();
 
-var proxy_host = ip.address();
 var help = argv.h || argv.help;
 var version = argv.v || argv.version;
-var config_file = argv.c || argv.config;
 var tls_enabled = argv.t || argv.tls;
 var cert_file = argv.C || argv.cert;
 var key_file = argv.K || argv.key;
-var default_port = argv.p || argv.port;
+var host = process.env.HOST || '0.0.0.0';
+var port = parseInt(argv.p || argv.port || process.env.PORT || 8080);
 var debug = argv.d || argv.debug;
-var default_nats = argv.n || argv.nats;
-var nats, cert, key, config;
+var nats_url = argv.n || argv.nats || 'nats://0.0.0.0:4222';
+var cert, key;
 
-if (help || _.size(argv) === 1) {
-  cmd.getHelp();
-}
+if (help || _.size(argv) === 1) cmd.getHelp();
+if (version) cmd.getVersion();
+if (cert_file) cert = cmd.getCertificate(cert_file);
+if (key_file) key = cmd.getKey(key_file);
 
-if (version) {
-  cmd.getVersion();
-}
+var nats = NATS.connect({
+  url: nats_url,
+  json: true,
+  client: pkg.name,
+  reconnect: true,
+  maxReconnectAttempts: -1,
+  reconnectTimeWait: 5000
+});
 
-if (cert_file) {
-  cert = cmd.getCertificate(cert_file);
-}
-
-if (key_file) {
-  key = cmd.getKey(key_file);
-}
-
-if (config_file) {
-  config = cmd.getConfig(config_file);
-}
-
-var proxy_port = parseInt(default_port) || 5000;
-var nats_host = default_nats || ip.address();
-var default_route = config_file ? config.default_route : '/';
-var routes = config_file ? config.routes : [];
-
-nats = NATS.connect({ servers: ['nats://' + nats_host + ':4222'] });
-
-app.use(monitor());
+app.use(monitor({ title: pkg.name + ' [' + ip.address() + ']', path: '/' }));
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
 
-routes.forEach(function(item) {
-  app.post(item.url, function(req, res) {
-    nats.publish(item.channel, JSON.stringify(req.body));
-    res.end();
-  });
-});
-
-app.post(default_route, function(req, res) {
-  var channel = req.body.channel || 'DEFAULT';
-  delete req.body.channel;
-  var data = JSON.stringify(req.body);
-  nats.publish(channel, data);
-  if (debug) console.log(new Date().toISOString(), data);
-  res.end();
+app.post('/', function (req, res) {
+  delete req.body.__subject;
+  nats.publish(req.body.__subject || 'DEFAULT', req.body);
+  if (debug) console.log(new Date().toISOString(), JSON.stringify(req.body));
+  res.status(200).end();
 });
 
 if (tls_enabled && cert && key) {
   var httpsOptions = { key: key, cert: cert };
-  https.createServer(httpsOptions, app).listen(proxy_port, proxy_host, function() {
-    console.log([
-      '', 'NATS.io messaging proxy v' + pkg.version,
-      'Service running on https://' + proxy_host + ':' + proxy_port,
-      'NATS.io running on nats://' + nats.currentServer.url.host,
-      ''
-    ].join('\n'));
+  https.createServer(httpsOptions, app).listen(port, host, function () {
+    console.log('Server running on https://' + host + ':' + port);
   });
 }
 else {
-  http.createServer(app).listen(proxy_port, proxy_host, function() {
-    console.log([
-      '', 'NATS.io messaging proxy v' + pkg.version,
-      'Service running on http://' + proxy_host + ':' + proxy_port,
-      'NATS.io running on nats://' + nats.currentServer.url.host,
-      ''
-    ].join('\n'));
+  http.createServer(app).listen(port, host, function () {
+    console.log('Server running on http://' + host + ':' + port);
   });
 }

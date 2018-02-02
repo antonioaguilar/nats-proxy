@@ -1,17 +1,15 @@
 var pkg = require('./package.json');
 var fs = require('fs-extra');
-var ip = require('ip');
 
 function getHelp() {
   console.log([
-    '', 'NATS.io messaging proxy v' + pkg.version,
+    '', 'NATS.io messaging proxy',
     '', 'usage: nats-proxy [options]',
     '',
     'options:',
-    '  -p --port    Port number (Default: 5000)',
-    '  -n --nats    NATS.io server URL (Default: nats://' + ip.address() + ':4222)',
-    '  -d --debug   Enable debug mode',
-    '  -c --config  Routes configuration file',
+    '  -p --port    Port number (Default: 8080)',
+    '  -n --nats    NATS server URL (Default: nats://0.0.0.0:4222)',
+    '  -d --debug   Enable debug output',
     '  -t --tls     Enable TLS / HTTPS',
     '  -C --cert    Server certificate file',
     '  -K --key     Private key file',
@@ -25,18 +23,6 @@ function getHelp() {
 function getVersion() {
   console.log(pkg.version);
   process.exit();
-}
-
-function getConfig(config_file) {
-  try {
-    fs.statSync(config_file).isFile();
-    return fs.readJSONSync(config_file);
-  }
-  catch (err) {
-    console.error('Error: Could not find file');
-    console.error(err);
-    process.exit();
-  }
 }
 
 function getCertificate(cert_file) {
@@ -64,7 +50,6 @@ function getKey(cert_key) {
 module.exports = {
   getHelp: getHelp,
   getVersion: getVersion,
-  getConfig: getConfig,
   getCertificate: getCertificate,
   getKey: getKey
 };

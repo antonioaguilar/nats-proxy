@@ -1,6 +1,6 @@
 {
   "name": "nats-proxy",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "NATS.io messaging proxy",
   "main": "index.js",
   "preferGlobal": true,
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "docker build . -t aaguilar/nats-proxy",
-    "container": "docker run -it --rm -m 128M -p 5000:5000 aaguilar/nats-proxy -p 5000 -n $(hostname)"
+    "container": "docker run -it --rm -m 128M -p 8080:8080 aaguilar/nats-proxy -p 8080 -n nats://$(hostname):4222"
   },
   "repository": {
     "type": "git",
