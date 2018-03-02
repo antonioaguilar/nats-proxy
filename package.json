@@ -1,7 +1,7 @@
 {
   "name": "nats-proxy",
-  "version": "1.7.2",
-  "description": "NATS.io messaging proxy",
+  "version": "1.7.3",
+  "description": "A simple NATS.io messaging proxy in NodeJS",
   "main": "index.js",
   "preferGlobal": true,
   "bin": {
